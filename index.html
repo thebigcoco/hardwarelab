@@ -25,5 +25,8 @@
 </section>
 <div class="foot">入口網站 repo：<code>hardwarelab</code>　｜　PSU Rating 維持獨立 repo。未來新增報告時，只需新增一張卡片；各報告的 <code>New!</code> 標示仍在原報告內管理。</div>
 </main>
+<script>
+(async()=>{const prefix='\u5831\u544a\u7522\u751f\uff1a',suffix='\uff08\u53f0\u7063\u6642\u9593\uff09',items=[['.report.gpu .meta','https://raw.githubusercontent.com/thebigcoco/gpu-safeguard/main/report-meta.json'],['.report.build .meta','https://raw.githubusercontent.com/thebigcoco/pcbuilds/main/report-meta.json'],['.report.psu .meta','https://raw.githubusercontent.com/thebigcoco/psu-rating/main/report-meta.json']];await Promise.allSettled(items.map(async([selector,url])=>{const response=await fetch(url+'?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error(response.status);const meta=await response.json(),el=document.querySelector(selector);if(!el||!meta.generated_at)return;el.innerHTML=el.innerHTML.split('<br>')[0]+'<br>'+prefix+meta.generated_at+suffix}))})();
+</script>
 </body>
 </html>
