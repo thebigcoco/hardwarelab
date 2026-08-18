@@ -43,16 +43,23 @@
     const asia=html.match(/產生時間：<b>([^<]+)\s+Asia\/Taipei<\/b>/);
     const local=html.match(/產生時間：([^<]+?)　｜/);
     const span=html.match(/產生時間：([^<]+?)（台灣時間，UTC\+8）/);
-    return asia?asia[1]+suffix:local?local[1].replace('（台灣時間，UTC+8）',suffix).trim():span?span[1].trim()+suffix:null;
+    const searched=html.match(/搜尋及整理日期：([^<　]+(?: [0-9:]+)?)(?:（台灣時間，UTC\+8）)?/);
+    return asia?asia[1]+suffix:local?local[1].replace('（台灣時間，UTC+8）',suffix).trim():span?span[1].trim()+suffix:searched?searched[1].trim()+suffix:null;
+  }
+  function updateMetaDate(el,date,thirdLine){
+    if(!el||!date)return;
+    const firstLine=el.innerHTML.split('<br>')[0];
+    el.innerHTML=firstLine+'<br>'+prefix+date+'<br>'+thirdLine;
   }
   for(const [selector,repo,cycle] of [['.report.gpu .meta','thebigcoco/gpu-safeguard','每週'],['.report.psu .meta','thebigcoco/psu-rating','每週']]){
-    try{const date=await latestReportDate(repo),el=document.querySelector(selector);if(date&&el)el.innerHTML=el.innerHTML.split('<br>')[0]+'<br>'+prefix+date+'<br>更新週期：'+cycle}catch(e){console.warn(repo+' 日期更新失敗',e)}
+    try{updateMetaDate(document.querySelector(selector),await latestReportDate(repo),'更新週期：'+cycle)}catch(e){console.warn(repo+' 日期更新失敗',e)}
   }
+  try{updateMetaDate(document.querySelector('.report.cpu .meta'),await latestReportDate('thebigcoco/ryzenx3d'),'搜尋範圍：2024 年起')}catch(e){console.warn('thebigcoco/ryzenx3d 日期更新失敗',e)}
   try{
     const response=await fetch('https://raw.githubusercontent.com/thebigcoco/pcbuilds/main/report-meta.json?v='+Date.now(),{cache:'no-store'});
     if(!response.ok)throw new Error(response.status);
     const meta=JSON.parse((await response.text()).replace(/^\uFEFF/,'')),el=document.querySelector('.report.build .meta');
-    if(meta.generated_at&&el)el.innerHTML=el.innerHTML.split('<br>')[0]+'<br>'+prefix+meta.generated_at+suffix+'<br>更新週期：每月';
+    if(meta.generated_at)updateMetaDate(el,meta.generated_at+suffix,'更新週期：每月');
   }catch(e){console.warn('PC Builds 日期更新失敗',e)}
 })();
 </script>
