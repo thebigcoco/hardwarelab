@@ -43,7 +43,7 @@
     const asia=html.match(/產生時間：<b>([^<]+)\s+Asia\/Taipei<\/b>/);
     const local=html.match(/產生時間：([^<]+?)　｜/);
     const span=html.match(/產生時間：([^<]+?)（台灣時間，UTC\+8）/);
-    const searched=html.match(/搜尋及整理日期：([^<　]+(?: [0-9:]+)?)(?:（台灣時間，UTC\+8）)?/);
+    const searched=html.match(/搜尋及整理日期：([0-9]{4}-[0-9]{2}-[0-9]{2}(?: [0-9:]+)?)(?:（台灣時間，UTC\+8）)?/);
     return asia?asia[1]+suffix:local?local[1].replace('（台灣時間，UTC+8）',suffix).trim():span?span[1].trim()+suffix:searched?searched[1].trim()+suffix:null;
   }
   function updateMetaDate(el,date,thirdLine){
